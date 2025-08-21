@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
-import { storage } from "./storage";
+import { storage } from "./storage.ts"; // <-- FIX APPLIED
 import { 
   insertPackSchema, 
   updatePackStageSchema,
@@ -121,7 +121,6 @@ export async function registerRoutes(app: Express): Promise<Server> {
         patientMRN,
       };
       
-      // Don't deactivate existing events anymore - allow multiple simultaneous events
       const event = await storage.createCodeRedEvent(transformedData);
       res.json(event);
     } catch (error) {
