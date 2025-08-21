@@ -8,9 +8,9 @@ import Dashboard from "@/pages/dashboard";
 import RunnerDashboard from "@/pages/runner";
 import LabDashboard from "@/pages/lab";
 import ClinicianDashboard from "@/pages/clinician";
-import UserCodeRedSelection from "@/components/user-code-red-selection";
 import NotFound from "@/pages/not-found";
 import AuditPage from "@/pages/audit";
+import { useEffect } from "react"; // Make sure this import is here
 
 function Router() {
   return (
@@ -19,7 +19,6 @@ function Router() {
       <Route path="/dashboard" component={Dashboard} />
       <Route path="/code-red-selection" component={CodeRedSelection} />
       <Route path="/lab" component={LabDashboard} />
-
       <Route path="/runner" component={RunnerDashboard} />
       <Route path="/clinician" component={ClinicianDashboard} />
       <Route path="/audit" component={AuditPage} />
@@ -29,6 +28,38 @@ function Router() {
 }
 
 function App() {
+  // THIS IS THE useEffect HOOK WE NEED TO FIX
+  useEffect(() => {
+    const protocol = window.location.protocol === "https:" ? "wss" : "ws";
+    const host = window.location.host;
+    const wsUrl = `${protocol}://${host}`;
+    
+    const ws = new WebSocket(wsUrl);
+
+    ws.onopen = () => {
+      console.log("WebSocket connected");
+    };
+
+    ws.onmessage = (event) => {
+      const message = JSON.parse(event.data);
+      if (message.type === 'RELOAD_STATE') {
+        queryClient.invalidateQueries();
+      }
+    };
+
+    ws.onclose = () => {
+      console.log("WebSocket disconnected");
+    };
+
+    ws.onerror = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    return () => {
+      ws.close();
+    };
+  }, []); // The empty array [] here is important
+
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
