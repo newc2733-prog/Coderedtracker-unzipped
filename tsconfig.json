@@ -14,11 +14,9 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "rootDir": "server",
     "paths": {
       "@/*": ["./client/src/*"]
     }
   },
-  "include": ["client", "server", "shared"],
-  "references": [{ "path": "./tsconfig.node.json" }]
+  "include": ["client", "server", "shared"]
 }
